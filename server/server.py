@@ -1,9 +1,3 @@
-"""
-Scoreboard Server — gRPC + Optimistic Concurrency Control (OCC)
-Porta padrão: 50051
-Uso: python server.py [--host 0.0.0.0] [--port 50051]
-"""
-
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
