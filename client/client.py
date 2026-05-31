@@ -1,8 +1,3 @@
-"""
-Scoreboard Client — gRPC
-Uso: python client.py --server <IP>:50051 --player P1 --game game1 --rounds 10
-"""
-
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -38,51 +33,48 @@ class ScoreboardClient:
         for attempt in range(1, self.MAX_RETRIES + 1):
             self.total_attempts += 1
 
-            # PASSO 1: Consultar escore atual
             current = self.get_score()
 
-            # PASSO 2: Calcular novo escore
             new_score = current.score + points_gained
             time.sleep(random.uniform(0.01, 0.05))
 
-            # PASSO 3: Tentar atualizar
             resp = self.stub.UpdateScore(pb2.UpdateScoreRequest(
                 game_id=self.game_id, new_score=new_score,
                 base_version=current.version, player_id=self.player_id))
 
             if resp.success:
                 self.total_success += 1
-                self.log.info("✓ Update  attempt=%d  +%d pts  score=%d  version=%d",
+                self.log.info(" Update  attempt=%d  +%d pts  score=%d  version=%d",
                     attempt, points_gained, resp.score, resp.version)
                 return {"status": "ok", "score": resp.score, "attempts": attempt}
 
             if "Conflito" in resp.message:
                 self.total_conflicts += 1
                 backoff = self.BASE_BACKOFF * (2 ** (attempt - 1)) + random.uniform(0, 0.05)
-                self.log.warning("✗ Conflito (tentativa %d/%d) → retry em %.2fs",
+                self.log.warning(" Conflito (tentativa %d/%d) -> retry em %.2fs",
                     attempt, self.MAX_RETRIES, backoff)
                 time.sleep(backoff)
                 continue
 
             self.total_rejected += 1
-            self.log.warning("✗ Rejeitado: %s", resp.message)
+            self.log.warning(" Rejeitado: %s", resp.message)
             return {"status": "rejected", "score": resp.score, "attempts": attempt}
 
-        self.log.error("✗ Falha após %d tentativas", self.MAX_RETRIES)
+        self.log.error(" Falha após %d tentativas", self.MAX_RETRIES)
         return {"status": "failed", "attempts": self.MAX_RETRIES}
 
     def play(self, rounds: int, min_pts: int = 10, max_pts: int = 100,
              think_time: float = 0.5):
-        self.log.info("=== Iniciando sessão: %d rodadas ===", rounds)
+        self.log.info(" Iniciando sessão: %d rodadas ", rounds)
         start = time.time()
         for r in range(1, rounds + 1):
             pts = random.randint(min_pts, max_pts)
-            self.log.info("--- Rodada %d/%d  pontos=%d ---", r, rounds, pts)
+            self.log.info(" Rodada %d/%d  pontos=%d ", r, rounds, pts)
             self.update_score(pts)
             if r < rounds:
                 time.sleep(random.uniform(0, think_time))
         elapsed = time.time() - start
-        self.log.info("=== RESUMO: tentativas=%d sucessos=%d conflitos=%d (%.2fs) ===",
+        self.log.info(" RESUMO: tentativas=%d sucessos=%d conflitos=%d (%.2fs) ",
             self.total_attempts, self.total_success, self.total_conflicts, elapsed)
 
 
