@@ -77,7 +77,7 @@ class ScoreboardServicer(pb2_grpc.ScoreboardServiceServicer):
                 "new_score": game.score, "version": game.version,
                 "timestamp": game.timestamp})
 
-            log.info("ATUALIZADO player=%-10s %d → %d  (v%d)",
+            log.info("ATUALIZADO player=%-10s %d -> %d  (v%d)",
                      request.player_id, old_score, game.score, game.version)
             return pb2.UpdateScoreResponse(success=True, message="OK",
                 score=game.score, version=game.version)
