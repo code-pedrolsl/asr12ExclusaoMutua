@@ -61,7 +61,7 @@ def player_worker(server_addr, player_id, game_id, rounds, min_pts, max_pts,
 
 def run_test(server_addr, n_players, game_id, rounds, min_pts, max_pts,
              think_time, instance_id):
-    log.info("TESTE DE CONCORRÊNCIA — %d jogadores, %d rodadas", n_players, rounds)
+    log.info("TESTE DE CONCORRÊNCIA - %d jogadores, %d rodadas", n_players, rounds)
     log.info("Servidor: %s  |  Instância: %s", server_addr, instance_id)
 
     results = TestResults()
