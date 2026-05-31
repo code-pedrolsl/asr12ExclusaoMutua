@@ -18,7 +18,7 @@ Sistema de manutenção de escore para jogos multi-player, implementado com **gR
 │   │  • UpdateScore → valida versão + regra "só cresce"  │   │
 │   │  lock: threading.Lock (proteção de estado)          │   │
 │   └─────────────────────────────────────────────────────┘   │
-│                      porta 50051                             │
+│                      porta 5678                             │
 └──────────────────────────────────────────────────────────────┘
           ↑           ↑           ↑
          gRPC        gRPC        gRPC
@@ -84,7 +84,7 @@ python -m grpc_tools.protoc -I proto \
 
 ```bash
 # 1. Lance uma EC2 (ex: t3.micro, Ubuntu 22.04)
-# 2. Libere a porta 50051 no Security Group (TCP inbound)
+# 2. Libere a porta 5678 no Security Group (TCP inbound)
 # 3. Conecte via SSH e execute:
 
 git clone <repo> && cd scoreboard
@@ -93,7 +93,7 @@ pip install -r requirements.txt
 # Copie os .py gerados para server/
 cp scoreboard_pb2*.py server/
 
-python server/server.py --host 0.0.0.0 --port 50051
+python server/server.py --host 0.0.0.0 --port 5678
 ```
 
 ### Instâncias dos Clientes (repetir para cada)
@@ -105,14 +105,14 @@ cp scoreboard_pb2*.py client/ tests/
 
 # Cliente único:
 python client/client.py \
-    --server <IP_SERVIDOR>:50051 \
+    --server 3.227.138.6:5678 \
     --player Player1 \
     --game game1 \
     --rounds 20
 
 # Teste de concorrência (N clientes na mesma instância):
 python tests/test_concurrent.py \
-    --server <IP_SERVIDOR>:50051 \
+    --server 3.227.138.6:5678 \
     --players 10 \
     --rounds 20 \
     --instance-id aws-client-1
