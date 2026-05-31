@@ -40,7 +40,7 @@ scoreboard/
 ## Instalação
 
 ```bash
-# Regenerar os arquivos proto (se necessário)
+# Gerar os arquivos proto
 python -m grpc_tools.protoc -I proto \
     --python_out=. --grpc_python_out=. \
     proto/scoreboard.proto
