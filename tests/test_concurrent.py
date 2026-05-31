@@ -1,8 +1,3 @@
-"""
-Teste de Concorrência — Múltiplos Clientes Simultâneos
-Uso: python tests/test_concurrent.py --server <IP>:50051 --players 10 --rounds 15 --instance-id aws-1
-"""
-
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'client'))
@@ -55,7 +50,7 @@ def player_worker(server_addr, player_id, game_id, rounds, min_pts, max_pts,
                   think_time, results, barrier):
     try:
         client = ScoreboardClient(server_addr, player_id, game_id)
-        barrier.wait()  # todos os clientes iniciam ao mesmo tempo
+        barrier.wait()
         client.play(rounds=rounds, min_pts=min_pts, max_pts=max_pts,
                     think_time=think_time)
         results.record(player_id, client)
@@ -66,10 +61,8 @@ def player_worker(server_addr, player_id, game_id, rounds, min_pts, max_pts,
 
 def run_test(server_addr, n_players, game_id, rounds, min_pts, max_pts,
              think_time, instance_id):
-    log.info("=" * 60)
     log.info("TESTE DE CONCORRÊNCIA — %d jogadores, %d rodadas", n_players, rounds)
     log.info("Servidor: %s  |  Instância: %s", server_addr, instance_id)
-    log.info("=" * 60)
 
     results = TestResults()
     barrier = threading.Barrier(n_players)
@@ -89,8 +82,7 @@ def run_test(server_addr, n_players, game_id, rounds, min_pts, max_pts,
     final   = stub.GetScore(pb2.GetScoreRequest(game_id=game_id))
     summary = results.summary()
 
-    log.info("=" * 60)
-    log.info("RESULTADO FINAL — %.2fs", elapsed)
+    log.info("RESULTADO FINAL - %.2fs", elapsed)
     log.info("  Escore final     : %d  (versão %d)", final.score, final.version)
     log.info("  Tentativas       : %d", summary["attempts"])
     log.info("  Sucessos         : %s  (%s)", summary["success"],
@@ -98,7 +90,6 @@ def run_test(server_addr, n_players, game_id, rounds, min_pts, max_pts,
     log.info("  Conflitos OCC    : %s  (%s)", summary["conflicts"],
              summary.get("conflict_rate", "?"))
     log.info("  Erros            : %d", summary["errors"])
-    log.info("=" * 60)
 
     out_file = f"result_{instance_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
     with open(out_file, "w") as f:
